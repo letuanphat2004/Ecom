@@ -12,7 +12,6 @@ export default function ProductCard({ product, onAddToCart }) {
         <p>{product.description || 'Chua co mo ta.'}</p>
         <div className="product-meta">
           <strong>{formatCurrency(product.price)}</strong>
-          <span>Ton kho: {product.stockQuantity}</span>
         </div>
         <button onClick={() => onAddToCart(product)}>
           <ShoppingCart size={17} />

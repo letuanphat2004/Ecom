@@ -62,7 +62,6 @@ public class ProductService {
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
-                product.getStockQuantity(),
                 product.getImageUrl(),
                 product.isActive()
         );
@@ -72,7 +71,6 @@ public class ProductService {
         product.setName(request.name());
         product.setDescription(request.description());
         product.setPrice(request.price());
-        product.setStockQuantity(request.stockQuantity());
         product.setImageUrl(request.imageUrl());
         if (request.active() != null) {
             product.setActive(request.active());
