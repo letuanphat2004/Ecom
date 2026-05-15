@@ -1,11 +1,12 @@
 package com.ecom.service;
 
+import com.ecom.client.InventoryClient;
+import com.ecom.client.InventoryClient.ReservedProduct;
 import com.ecom.dto.OrderDtos.CreateOrderRequest;
 import com.ecom.dto.OrderDtos.OrderItemResponse;
 import com.ecom.dto.OrderDtos.OrderResponse;
 import com.ecom.entity.Order;
 import com.ecom.entity.OrderItem;
-import com.ecom.entity.Product;
 import com.ecom.entity.User;
 import com.ecom.exception.ApiException;
 import com.ecom.repository.OrderRepository;
@@ -23,12 +24,12 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
-    private final InventoryService inventoryService;
+    private final InventoryClient inventoryClient;
 
-    public OrderService(OrderRepository orderRepository, UserRepository userRepository, InventoryService inventoryService) {
+    public OrderService(OrderRepository orderRepository, UserRepository userRepository, InventoryClient inventoryClient) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
-        this.inventoryService = inventoryService;
+        this.inventoryClient = inventoryClient;
     }
 
     @Transactional
@@ -39,7 +40,7 @@ public class OrderService {
 
         BigDecimal total = BigDecimal.ZERO;
         for (var line : request.items()) {
-            Product product = inventoryService.reserveStock(
+            ReservedProduct product = inventoryClient.reserveStock(
                     line.productId(),
                     line.quantity(),
                     "Order reservation",
@@ -48,13 +49,13 @@ public class OrderService {
 
             OrderItem item = new OrderItem();
             item.setOrder(order);
-            item.setProductId(product.getId());
-            item.setProductName(product.getName());
+            item.setProductId(product.productId());
+            item.setProductName(product.productName());
             item.setQuantity(line.quantity());
-            item.setUnitPrice(product.getPrice());
+            item.setUnitPrice(product.unitPrice());
             order.getItems().add(item);
 
-            total = total.add(product.getPrice().multiply(BigDecimal.valueOf(line.quantity())));
+            total = total.add(product.unitPrice().multiply(BigDecimal.valueOf(line.quantity())));
         }
 
         order.setTotalAmount(total);
