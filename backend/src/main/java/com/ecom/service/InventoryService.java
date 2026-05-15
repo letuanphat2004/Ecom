@@ -102,7 +102,8 @@ public class InventoryService {
             Principal principal
     ) {
         InventoryMovement movement = new InventoryMovement();
-        movement.setProduct(product);
+        movement.setProductId(product.getId());
+        movement.setProductName(product.getName());
         movement.setType(type);
         movement.setQuantityChange(quantityChange);
         movement.setStockAfter(product.getStockQuantity());
@@ -123,8 +124,8 @@ public class InventoryService {
     private InventoryMovementResponse toMovementResponse(InventoryMovement movement) {
         return new InventoryMovementResponse(
                 movement.getId(),
-                movement.getProduct().getId(),
-                movement.getProduct().getName(),
+                movement.getProductId(),
+                movement.getProductName(),
                 movement.getType(),
                 movement.getQuantityChange(),
                 movement.getStockAfter(),
