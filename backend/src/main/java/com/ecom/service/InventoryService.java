@@ -1,16 +1,16 @@
 package com.ecom.service;
 
+import com.ecom.client.ProductClient;
+import com.ecom.client.ProductClient.ProductView;
 import com.ecom.dto.InventoryDtos.AdjustStockRequest;
 import com.ecom.dto.InventoryDtos.InventoryMovementResponse;
 import com.ecom.dto.InventoryDtos.RestockRequest;
 import com.ecom.dto.InventoryDtos.StockResponse;
 import com.ecom.entity.InventoryMovement;
 import com.ecom.entity.InventoryMovementType;
-import com.ecom.entity.Product;
 import com.ecom.entity.StockItem;
 import com.ecom.exception.ApiException;
 import com.ecom.repository.InventoryMovementRepository;
-import com.ecom.repository.ProductRepository;
 import com.ecom.repository.StockItemRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,47 +24,47 @@ import java.util.stream.Collectors;
 @Service
 public class InventoryService {
 
-    private final ProductRepository productRepository;
+    private final ProductClient productClient;
     private final StockItemRepository stockItemRepository;
     private final InventoryMovementRepository movementRepository;
 
     public InventoryService(
-            ProductRepository productRepository,
+            ProductClient productClient,
             StockItemRepository stockItemRepository,
             InventoryMovementRepository movementRepository
     ) {
-        this.productRepository = productRepository;
+        this.productClient = productClient;
         this.stockItemRepository = stockItemRepository;
         this.movementRepository = movementRepository;
     }
 
     @Transactional(readOnly = true)
     public List<StockResponse> findAllStock() {
-        List<Product> products = productRepository.findAll();
+        List<ProductView> products = productClient.findAllProducts();
         if (products.isEmpty()) {
             return List.of();
         }
 
         Map<Long, StockItem> stockByProductId = stockItemRepository.findByProductIdIn(
-                        products.stream().map(Product::getId).toList()
+                        products.stream().map(ProductView::productId).toList()
                 ).stream()
                 .collect(Collectors.toMap(StockItem::getProductId, stockItem -> stockItem));
 
         return products.stream()
-                .map(product -> toStockResponse(product, stockByProductId.get(product.getId())))
+                .map(product -> toStockResponse(product, stockByProductId.get(product.productId())))
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public StockResponse findProductStock(Long productId) {
-        Product product = getProduct(productId);
+        ProductView product = productClient.getProduct(productId);
         StockItem stockItem = stockItemRepository.findByProductId(productId).orElse(null);
         return toStockResponse(product, stockItem);
     }
 
     @Transactional
     public StockResponse restock(Long productId, RestockRequest request, Principal principal) {
-        Product product = getProduct(productId);
+        ProductView product = productClient.getProduct(productId);
         StockItem stockItem = getOrCreateLockedStockItem(productId);
         int nextStock = stockItem.getQuantity() + request.quantity();
         stockItem.setQuantity(nextStock);
@@ -75,7 +75,7 @@ public class InventoryService {
 
     @Transactional
     public StockResponse adjustStock(Long productId, AdjustStockRequest request, Principal principal) {
-        Product product = getProduct(productId);
+        ProductView product = productClient.getProduct(productId);
         StockItem stockItem = getOrCreateLockedStockItem(productId);
         int quantityChange = request.stockQuantity() - stockItem.getQuantity();
         stockItem.setQuantity(request.stockQuantity());
@@ -85,14 +85,14 @@ public class InventoryService {
     }
 
     @Transactional
-    public Product reserveStock(Long productId, int quantity, String reason, Principal principal) {
-        Product product = getProduct(productId);
+    public ProductView reserveStock(Long productId, int quantity, String reason, Principal principal) {
+        ProductView product = productClient.getProduct(productId);
         StockItem stockItem = getOrCreateLockedStockItem(productId);
-        if (!product.isActive()) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Product is not active: " + product.getId());
+        if (!product.active()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Product is not active: " + product.productId());
         }
         if (stockItem.getQuantity() < quantity) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Not enough stock for product: " + product.getName());
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Not enough stock for product: " + product.productName());
         }
 
         int nextStock = stockItem.getQuantity() - quantity;
@@ -113,11 +113,6 @@ public class InventoryService {
                 .toList();
     }
 
-    private Product getProduct(Long productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Product not found"));
-    }
-
     private StockItem getOrCreateLockedStockItem(Long productId) {
         return stockItemRepository.findByProductIdForUpdate(productId)
                 .orElseGet(() -> {
@@ -129,7 +124,7 @@ public class InventoryService {
     }
 
     private void saveMovement(
-            Product product,
+            ProductView product,
             InventoryMovementType type,
             int quantityChange,
             int stockAfter,
@@ -137,8 +132,8 @@ public class InventoryService {
             Principal principal
     ) {
         InventoryMovement movement = new InventoryMovement();
-        movement.setProductId(product.getId());
-        movement.setProductName(product.getName());
+        movement.setProductId(product.productId());
+        movement.setProductName(product.productName());
         movement.setType(type);
         movement.setQuantityChange(quantityChange);
         movement.setStockAfter(stockAfter);
@@ -147,12 +142,12 @@ public class InventoryService {
         movementRepository.save(movement);
     }
 
-    private StockResponse toStockResponse(Product product, StockItem stockItem) {
+    private StockResponse toStockResponse(ProductView product, StockItem stockItem) {
         return new StockResponse(
-                product.getId(),
-                product.getName(),
+                product.productId(),
+                product.productName(),
                 stockItem != null ? stockItem.getQuantity() : 0,
-                product.isActive()
+                product.active()
         );
     }
 

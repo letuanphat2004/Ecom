@@ -1,8 +1,8 @@
 # Ecom Monolith
 
-Ecom is a full-stack ecommerce application with a Spring Boot backend and a React/Vite frontend. The project is currently a monolith, but it is being refactored step by step toward a modular architecture that can later be extracted into microservices.
+Ecom là ứng dụng ecommerce full-stack gồm backend Spring Boot và frontend React/Vite. Dự án hiện tại vẫn là monolith, nhưng đang được refactor từng bước theo hướng modular monolith để sau này có thể tách dần thành microservice.
 
-This README is the main project document. Update it whenever a meaningful architecture, API, database, or refactor change is completed.
+README này là tài liệu chính của dự án. Khi hoàn thành một thay đổi đáng kể về architecture, API, database hoặc refactor, cần cập nhật lại README.
 
 ## Tech Stack
 
@@ -12,7 +12,7 @@ Frontend  React, Vite
 Build     Maven, npm
 ```
 
-## Project Structure
+## Cấu Trúc Dự Án
 
 ```text
 Ecom/
@@ -39,9 +39,11 @@ Ecom/
       utils/
 ```
 
-## Local Setup
+## Chạy Local
 
-### Backend Requirements
+### Backend
+
+Yêu cầu:
 
 ```text
 Java 21
@@ -49,33 +51,35 @@ Maven
 MySQL
 ```
 
-Backend configuration lives in:
+File cấu hình backend:
 
 ```text
 backend/src/main/resources/application.yml
 ```
 
-Run backend:
+Chạy backend:
 
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 
-Default backend port:
+Port mặc định:
 
 ```text
 8080
 ```
 
-### Frontend Requirements
+### Frontend
+
+Yêu cầu:
 
 ```text
 Node.js
 npm
 ```
 
-Run frontend:
+Chạy frontend:
 
 ```bash
 cd frontend
@@ -83,19 +87,19 @@ npm install
 npm run dev
 ```
 
-Default frontend port:
+Port mặc định:
 
 ```text
 5173
 ```
 
-Optional frontend environment variable:
+Biến môi trường frontend nếu cần đổi API base URL:
 
 ```text
 VITE_API_BASE_URL=http://localhost:8080/api
 ```
 
-## Main APIs
+## API Chính
 
 ### Auth
 
@@ -131,9 +135,9 @@ POST /api/orders
 GET  /api/orders/me
 ```
 
-## Current Domains
+## Domain Hiện Tại
 
-The backend currently has these business areas:
+Backend hiện có các nhóm nghiệp vụ chính:
 
 ```text
 Auth/User
@@ -142,11 +146,11 @@ Inventory
 Order
 ```
 
-It is still one Spring Boot application and one deployable backend. The current refactor goal is to reduce coupling inside the monolith before extracting physical services.
+Hiện tại toàn bộ backend vẫn là một Spring Boot application và một deployable backend. Mục tiêu refactor hiện tại là giảm coupling bên trong monolith trước khi tách thành các service vật lý.
 
-## Database Ownership Direction
+## Hướng Sở Hữu Database
 
-Current direction for future service ownership:
+Định hướng ownership cho các service sau này:
 
 ```text
 Auth/User owns:
@@ -165,15 +169,15 @@ Order owns:
 - order_items
 ```
 
-The database may still be physically shared while the project is a monolith. The important rule during refactor is to move toward clear ownership and avoid cross-domain JPA relationships.
+Trong giai đoạn monolith, database vẫn có thể được dùng chung về mặt vật lý. Điểm quan trọng là code và data model cần đi dần về hướng ownership rõ ràng, hạn chế JPA relationship vượt boundary.
 
-## Refactor Progress
+## Tiến Độ Refactor
 
-### 1. OrderItem Product Snapshot
+### 1. OrderItem lưu product snapshot
 
-`OrderItem` no longer keeps a JPA relationship to `Product`.
+`OrderItem` không còn giữ JPA relationship trực tiếp tới `Product`.
 
-Current order item data:
+Dữ liệu hiện tại của order item:
 
 ```text
 productId
@@ -182,18 +186,18 @@ unitPrice
 quantity
 ```
 
-Why:
+Ý nghĩa:
 
 ```text
-Order history must keep product name and price at the time of purchase.
-Order should not depend directly on Product entity mapping.
+Order history giữ lại tên và giá sản phẩm tại thời điểm mua.
+Order không phụ thuộc trực tiếp vào Product entity mapping.
 ```
 
-### 2. InventoryMovement Product Snapshot
+### 2. InventoryMovement lưu product snapshot
 
-`InventoryMovement` no longer keeps a JPA relationship to `Product`.
+`InventoryMovement` không còn giữ JPA relationship trực tiếp tới `Product`.
 
-Current movement data:
+Dữ liệu hiện tại của inventory movement:
 
 ```text
 productId
@@ -206,22 +210,22 @@ createdBy
 createdAt
 ```
 
-Why:
+Ý nghĩa:
 
 ```text
-Inventory history should remain readable without joining Product.
-Inventory should move toward owning its own historical records.
+Inventory history vẫn đọc được mà không cần join Product.
+Inventory tiến gần hơn tới việc sở hữu historical records riêng.
 ```
 
-### 3. Stock Moved Out Of Product
+### 3. Tách stock khỏi Product
 
-`Product` no longer owns stock quantity.
+`Product` không còn sở hữu stock quantity.
 
-Current split:
+Phân tách hiện tại:
 
 ```text
 products
-- catalog information such as name, description, price, imageUrl, active
+- thông tin catalog như name, description, price, imageUrl, active
 
 stock_items
 - productId
@@ -229,18 +233,18 @@ stock_items
 - updatedAt
 ```
 
-Why:
+Ý nghĩa:
 
 ```text
 Product/Catalog owns product information.
 Inventory owns stock quantity.
 ```
 
-### 4. InventoryClient Introduced For Order Flow
+### 4. Thêm InventoryClient cho order flow
 
-`OrderService` no longer calls `InventoryService` directly.
+`OrderService` không còn gọi trực tiếp `InventoryService`.
 
-Current flow:
+Flow hiện tại:
 
 ```text
 OrderService
@@ -249,14 +253,14 @@ OrderService
   -> InventoryService
 ```
 
-Why:
+Ý nghĩa:
 
 ```text
-Order depends on a contract instead of a concrete Inventory service.
-Later, LocalInventoryClient can be replaced by an HTTP client when Inventory becomes a separate service.
+Order phụ thuộc vào contract thay vì concrete Inventory service.
+Sau này LocalInventoryClient có thể được thay bằng HTTP client khi Inventory tách thành service riêng.
 ```
 
-Current client contract returns:
+Contract hiện tại trả về:
 
 ```text
 ReservedProduct
@@ -265,11 +269,41 @@ ReservedProduct
 - unitPrice
 ```
 
-## Current Order Flow
+### 5. Thêm ProductClient cho inventory flow
 
-The project currently treats order placement as completed immediately. There is no separate payment flow yet.
+`InventoryService` không còn gọi trực tiếp `ProductRepository`.
 
-Current flow:
+Flow hiện tại:
+
+```text
+InventoryService
+  -> ProductClient
+  -> LocalProductClient
+  -> ProductRepository
+```
+
+Ý nghĩa:
+
+```text
+Inventory phụ thuộc vào contract thay vì concrete Product repository.
+Sau này LocalProductClient có thể được thay bằng HTTP client khi Product/Catalog tách thành service riêng.
+```
+
+Contract hiện tại trả về:
+
+```text
+ProductView
+- productId
+- productName
+- unitPrice
+- active
+```
+
+## Order Flow Hiện Tại
+
+Dự án hiện tại coi việc đặt hàng là hoàn tất ngay, chưa có payment flow riêng.
+
+Flow hiện tại:
 
 ```text
 Customer submits order
@@ -279,7 +313,7 @@ Order is saved
 Order response is returned
 ```
 
-Because there is no pending payment state yet, there is no release-stock flow. If payment is added later, the system will need a compensation flow such as:
+Vì chưa có trạng thái pending payment, hiện tại chưa có release-stock flow. Nếu sau này thêm payment, hệ thống cần compensation flow:
 
 ```text
 reserveStock
@@ -287,32 +321,12 @@ payment success -> confirm order
 payment failure/cancel/timeout -> releaseStock
 ```
 
-## Next Refactor Candidates
+## Các Bước Refactor Tiếp Theo
 
-Recommended next steps:
-
-```text
-1. Add ProductClient so InventoryService does not depend directly on ProductRepository.
-2. Add a dedicated workflow for create product + initialize stock.
-3. Define internal API contracts for Product, Inventory, and Order.
-4. Add releaseStock when payment or cancel-order flow is introduced.
-5. Split into physical services only after boundaries are stable.
-```
-
-## README Update Rule
-
-Whenever a meaningful change is completed, update this README in the same commit or the next commit.
-
-Examples of changes that should update this file:
 
 ```text
-New API endpoint
-Database table or ownership change
-Domain boundary change
-Client/interface contract change
-New service extraction step
-Security or configuration requirement change
-Run/build instruction change
+1. Tạo workflow riêng cho create product + initialize stock.
+2. Định nghĩa internal API contract cho Product, Inventory và Order.
+3. Thêm releaseStock khi có payment hoặc cancel-order flow.
+4. Chỉ tách thành service vật lý sau khi boundary đã ổn định.
 ```
-
-Keep this README updated enough to explain the current architecture and refactor state.
