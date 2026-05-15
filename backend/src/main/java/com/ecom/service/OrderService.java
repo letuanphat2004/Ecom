@@ -48,7 +48,8 @@ public class OrderService {
 
             OrderItem item = new OrderItem();
             item.setOrder(order);
-            item.setProduct(product);
+            item.setProductId(product.getId());
+            item.setProductName(product.getName());
             item.setQuantity(line.quantity());
             item.setUnitPrice(product.getPrice());
             order.getItems().add(item);
@@ -75,8 +76,8 @@ public class OrderService {
     private OrderResponse toResponse(Order order) {
         List<OrderItemResponse> items = order.getItems().stream()
                 .map(item -> new OrderItemResponse(
-                        item.getProduct().getId(),
-                        item.getProduct().getName(),
+                        item.getProductId(),
+                        item.getProductName(),
                         item.getQuantity(),
                         item.getUnitPrice()
                 ))
