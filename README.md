@@ -371,6 +371,35 @@ Dễ kiểm soát domain nào được phụ thuộc domain nào.
 Dễ tách từng domain thành service vật lý sau này.
 ```
 
+### 8. Tách Order khỏi User về mặt model
+
+`Order` không còn giữ JPA relationship trực tiếp tới `User`.
+
+Dữ liệu người mua hiện tại trong order:
+
+```text
+userId
+customerEmail
+customerName
+```
+
+`OrderService` không còn gọi trực tiếp `UserRepository`. Flow hiện tại:
+
+```text
+OrderService
+  -> UserClient
+  -> LocalUserClient
+  -> UserRepository
+```
+
+Ý nghĩa:
+
+```text
+Order lưu snapshot/tham chiếu người mua tại thời điểm đặt hàng.
+Order không phụ thuộc trực tiếp vào User entity mapping.
+Sau này LocalUserClient có thể được thay bằng HTTP client khi Auth/User tách thành service riêng.
+```
+
 ## Order Flow Hiện Tại
 
 Dự án hiện tại coi việc đặt hàng là hoàn tất ngay, chưa có payment flow riêng.
@@ -383,13 +412,6 @@ OrderService asks InventoryClient to reserve stock
 Inventory decreases stock quantity
 Order is saved
 Order response is returned
-```
-
-Vì chưa có trạng thái pending payment, hiện tại chưa có release-stock flow. Nếu sau này thêm payment, hệ thống cần compensation flow:
-
-```text
-Hiện tại dự án giả định đơn hàng COD được hoàn tất ngay khi khách bấm đặt hàng.
-Hệ thống không triển khai payment flow, cancel-order flow hoặc release-stock flow trong phạm vi hiện tại.
 ```
 
 ## Các Bước Refactor Tiếp Theo

@@ -206,6 +206,14 @@ orders
 order_items
 ```
 
+Order lưu thông tin người mua bằng snapshot/tham chiếu:
+
+```text
+userId
+customerEmail
+customerName
+```
+
 API hiện tại cho frontend:
 
 ```text
@@ -242,6 +250,7 @@ OrderResponse
 Behavior:
 
 ```text
+OrderService gọi UserClient.getCurrentUser để lấy snapshot người mua.
 OrderService gọi InventoryClient.reserveStock cho từng item.
 OrderItem lưu product snapshot, không lưu JPA relation tới Product.
 ```
@@ -279,6 +288,7 @@ POST /internal/inventory/releases
 ## Kết Quả Dependency Scan Hiện Tại
 
 - `OrderService` đang phụ thuộc `InventoryClient`, không import `Product` hoặc `ProductRepository`.
+- `OrderService` đang phụ thuộc `UserClient`, không import `User` hoặc `UserRepository`.
 - `InventoryService` đang phụ thuộc `ProductClient`, không import `Product` hoặc `ProductRepository`.
 - `ProductService` đang phụ thuộc `InventoryClient`, không import `StockItem` hoặc `StockItemRepository`.
-- `LocalProductClient`, `LocalInventoryClient` và `DataSeeder` vẫn bridge vào implementation nội bộ vì dự án còn là monolith.
+- `LocalProductClient`, `LocalInventoryClient`, `LocalUserClient` và `DataSeeder` vẫn bridge vào implementation nội bộ vì dự án còn là monolith.

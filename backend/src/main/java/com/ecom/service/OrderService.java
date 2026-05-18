@@ -1,17 +1,15 @@
 package com.ecom.service;
 
+import com.ecom.client.UserClient;
+import com.ecom.client.UserClient.UserView;
 import com.ecom.dto.OrderDtos.CreateOrderRequest;
 import com.ecom.dto.OrderDtos.OrderItemResponse;
 import com.ecom.dto.OrderDtos.OrderResponse;
 import com.ecom.entity.Order;
 import com.ecom.entity.OrderItem;
-import com.ecom.entity.User;
-import com.ecom.exception.ApiException;
 import com.ecom.inventory.client.InventoryClient;
 import com.ecom.inventory.client.InventoryClient.ReservedProduct;
 import com.ecom.repository.OrderRepository;
-import com.ecom.repository.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,20 +21,22 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
+    private final UserClient userClient;
     private final InventoryClient inventoryClient;
 
-    public OrderService(OrderRepository orderRepository, UserRepository userRepository, InventoryClient inventoryClient) {
+    public OrderService(OrderRepository orderRepository, UserClient userClient, InventoryClient inventoryClient) {
         this.orderRepository = orderRepository;
-        this.userRepository = userRepository;
+        this.userClient = userClient;
         this.inventoryClient = inventoryClient;
     }
 
     @Transactional
     public OrderResponse createOrder(CreateOrderRequest request, Principal principal) {
-        User user = currentUser(principal);
+        UserView user = userClient.getCurrentUser(principal);
         Order order = new Order();
-        order.setUser(user);
+        order.setUserId(user.userId());
+        order.setCustomerEmail(user.email());
+        order.setCustomerName(user.fullName());
 
         BigDecimal total = BigDecimal.ZERO;
         for (var line : request.items()) {
@@ -64,14 +64,10 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public List<OrderResponse> myOrders(Principal principal) {
-        return orderRepository.findByUserEmailOrderByCreatedAtDesc(principal.getName()).stream()
+        UserView user = userClient.getCurrentUser(principal);
+        return orderRepository.findByCustomerEmailOrderByCreatedAtDesc(user.email()).stream()
                 .map(this::toResponse)
                 .toList();
-    }
-
-    private User currentUser(Principal principal) {
-        return userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Authenticated user not found"));
     }
 
     private OrderResponse toResponse(Order order) {
