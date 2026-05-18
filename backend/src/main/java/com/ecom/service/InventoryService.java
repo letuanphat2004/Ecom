@@ -85,6 +85,25 @@ public class InventoryService {
     }
 
     @Transactional
+    public StockResponse initializeStock(Long productId, int initialQuantity, String reason, Principal principal) {
+        if (initialQuantity < 0) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Initial stock quantity must be greater than or equal to 0");
+        }
+
+        ProductView product = productClient.getProduct(productId);
+        if (stockItemRepository.findByProductIdForUpdate(productId).isPresent()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Stock already initialized for product: " + product.productName());
+        }
+
+        StockItem stockItem = new StockItem();
+        stockItem.setProductId(productId);
+        stockItem.setQuantity(initialQuantity);
+        stockItemRepository.save(stockItem);
+        saveMovement(product, InventoryMovementType.INITIALIZATION, initialQuantity, initialQuantity, reason, principal);
+        return toStockResponse(product, stockItem);
+    }
+
+    @Transactional
     public ProductView reserveStock(Long productId, int quantity, String reason, Principal principal) {
         ProductView product = productClient.getProduct(productId);
         StockItem stockItem = getOrCreateLockedStockItem(productId);

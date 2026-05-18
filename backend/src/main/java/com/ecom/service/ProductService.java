@@ -1,5 +1,6 @@
 package com.ecom.service;
 
+import com.ecom.client.InventoryClient;
 import com.ecom.dto.ProductDtos.ProductRequest;
 import com.ecom.dto.ProductDtos.ProductResponse;
 import com.ecom.entity.Product;
@@ -15,9 +16,11 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final InventoryClient inventoryClient;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, InventoryClient inventoryClient) {
         this.productRepository = productRepository;
+        this.inventoryClient = inventoryClient;
     }
 
     public List<ProductResponse> findActiveProducts() {
@@ -34,7 +37,15 @@ public class ProductService {
     public ProductResponse create(ProductRequest request) {
         Product product = new Product();
         applyRequest(product, request);
-        return toResponse(productRepository.save(product));
+        Product savedProduct = productRepository.save(product);
+        int initialStockQuantity = request.initialStockQuantity() != null ? request.initialStockQuantity() : 0;
+        inventoryClient.initializeStock(
+                savedProduct.getId(),
+                initialStockQuantity,
+                "Initial stock for new product",
+                null
+        );
+        return toResponse(savedProduct);
     }
 
     @Transactional

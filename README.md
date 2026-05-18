@@ -118,6 +118,21 @@ PUT    /api/products/{id}
 DELETE /api/products/{id}
 ```
 
+Create product request:
+
+```json
+{
+  "name": "Ao thun cotton",
+  "description": "Ao thun co ban",
+  "price": 159000,
+  "imageUrl": "https://example.com/image.jpg",
+  "active": true,
+  "initialStockQuantity": 42
+}
+```
+
+`initialStockQuantity` chi duoc dung khi tao product moi. Khi update product, ton kho van duoc quan ly qua Inventory API.
+
 ### Inventory
 
 ```text
@@ -299,6 +314,35 @@ ProductView
 - active
 ```
 
+### 6. Tao workflow create product + initialize stock
+
+`ProductService` khong tu ghi truc tiep vao bang ton kho. Khi admin tao product moi, Product domain tao catalog record truoc, sau do goi `InventoryClient.initializeStock(...)` de Inventory domain tao `StockItem`.
+
+Flow hien tai:
+
+```text
+ProductController
+  -> ProductService.create()
+  -> InventoryClient.initializeStock()
+  -> LocalInventoryClient
+  -> InventoryService.initializeStock()
+```
+
+Request tao product co them:
+
+```text
+initialStockQuantity
+```
+
+Y nghia:
+
+```text
+Product owns catalog data.
+Inventory owns stock quantity.
+Create product flow phoi hop qua client contract thay vi tron stock vao Product entity.
+Sau nay LocalInventoryClient co the duoc thay bang HTTP client khi Inventory tach thanh service rieng.
+```
+
 ## Order Flow Hiện Tại
 
 Dự án hiện tại coi việc đặt hàng là hoàn tất ngay, chưa có payment flow riêng.
@@ -325,8 +369,7 @@ payment failure/cancel/timeout -> releaseStock
 
 
 ```text
-1. Tạo workflow riêng cho create product + initialize stock.
-2. Định nghĩa internal API contract cho Product, Inventory và Order.
-3. Thêm releaseStock khi có payment hoặc cancel-order flow.
-4. Chỉ tách thành service vật lý sau khi boundary đã ổn định.
+1. Định nghĩa internal API contract cho Product, Inventory và Order.
+2. Thêm releaseStock khi có payment hoặc cancel-order flow.
+3. Chỉ tách thành service vật lý sau khi boundary đã ổn định.
 ```

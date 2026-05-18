@@ -15,6 +15,11 @@ public class LocalInventoryClient implements InventoryClient {
     }
 
     @Override
+    public void initializeStock(Long productId, int initialQuantity, String reason, Principal principal) {
+        inventoryService.initializeStock(productId, initialQuantity, reason, principal);
+    }
+
+    @Override
     public ReservedProduct reserveStock(Long productId, int quantity, String reason, Principal principal) {
         ProductView product = inventoryService.reserveStock(productId, quantity, reason, principal);
         return new ReservedProduct(product.productId(), product.productName(), product.unitPrice());

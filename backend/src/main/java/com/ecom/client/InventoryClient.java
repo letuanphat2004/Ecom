@@ -5,6 +5,8 @@ import java.security.Principal;
 
 public interface InventoryClient {
 
+    void initializeStock(Long productId, int initialQuantity, String reason, Principal principal);
+
     ReservedProduct reserveStock(Long productId, int quantity, String reason, Principal principal);
 
     record ReservedProduct(
