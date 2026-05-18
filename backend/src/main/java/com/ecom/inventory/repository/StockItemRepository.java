@@ -1,6 +1,6 @@
-package com.ecom.repository;
+package com.ecom.inventory.repository;
 
-import com.ecom.entity.StockItem;
+import com.ecom.inventory.entity.StockItem;
 import jakarta.persistence.LockModeType;
 import java.util.Collection;
 import java.util.List;

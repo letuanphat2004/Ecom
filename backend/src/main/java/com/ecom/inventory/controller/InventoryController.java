@@ -1,10 +1,10 @@
-package com.ecom.controller;
+package com.ecom.inventory.controller;
 
-import com.ecom.dto.InventoryDtos.AdjustStockRequest;
-import com.ecom.dto.InventoryDtos.InventoryMovementResponse;
-import com.ecom.dto.InventoryDtos.RestockRequest;
-import com.ecom.dto.InventoryDtos.StockResponse;
-import com.ecom.service.InventoryService;
+import com.ecom.inventory.dto.InventoryDtos.AdjustStockRequest;
+import com.ecom.inventory.dto.InventoryDtos.InventoryMovementResponse;
+import com.ecom.inventory.dto.InventoryDtos.RestockRequest;
+import com.ecom.inventory.dto.InventoryDtos.StockResponse;
+import com.ecom.inventory.service.InventoryService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;

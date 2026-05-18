@@ -1,17 +1,17 @@
-package com.ecom.service;
+package com.ecom.inventory.service;
 
-import com.ecom.dto.InventoryDtos.AdjustStockRequest;
-import com.ecom.dto.InventoryDtos.InventoryMovementResponse;
-import com.ecom.dto.InventoryDtos.RestockRequest;
-import com.ecom.dto.InventoryDtos.StockResponse;
-import com.ecom.entity.InventoryMovement;
-import com.ecom.entity.InventoryMovementType;
-import com.ecom.entity.StockItem;
 import com.ecom.exception.ApiException;
+import com.ecom.inventory.dto.InventoryDtos.AdjustStockRequest;
+import com.ecom.inventory.dto.InventoryDtos.InventoryMovementResponse;
+import com.ecom.inventory.dto.InventoryDtos.RestockRequest;
+import com.ecom.inventory.dto.InventoryDtos.StockResponse;
+import com.ecom.inventory.entity.InventoryMovement;
+import com.ecom.inventory.entity.InventoryMovementType;
+import com.ecom.inventory.entity.StockItem;
+import com.ecom.inventory.repository.InventoryMovementRepository;
+import com.ecom.inventory.repository.StockItemRepository;
 import com.ecom.product.client.ProductClient;
 import com.ecom.product.client.ProductClient.ProductView;
-import com.ecom.repository.InventoryMovementRepository;
-import com.ecom.repository.StockItemRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,4 +1,4 @@
-package com.ecom.client;
+package com.ecom.inventory.client;
 
 import java.math.BigDecimal;
 import java.security.Principal;

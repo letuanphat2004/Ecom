@@ -27,6 +27,13 @@ Ecom/
         entity/
         repository/
         service/
+      inventory/
+        client/
+        controller/
+        dto/
+        entity/
+        repository/
+        service/
       client/
       config/
       controller/

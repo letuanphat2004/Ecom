@@ -1,7 +1,7 @@
 package com.ecom.product.service;
 
-import com.ecom.client.InventoryClient;
 import com.ecom.exception.ApiException;
+import com.ecom.inventory.client.InventoryClient;
 import com.ecom.product.dto.ProductDtos.ProductRequest;
 import com.ecom.product.dto.ProductDtos.ProductResponse;
 import com.ecom.product.entity.Product;

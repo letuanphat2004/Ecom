@@ -1,6 +1,6 @@
-package com.ecom.dto;
+package com.ecom.inventory.dto;
 
-import com.ecom.entity.InventoryMovementType;
+import com.ecom.inventory.entity.InventoryMovementType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;

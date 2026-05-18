@@ -1,7 +1,5 @@
 package com.ecom.service;
 
-import com.ecom.client.InventoryClient;
-import com.ecom.client.InventoryClient.ReservedProduct;
 import com.ecom.dto.OrderDtos.CreateOrderRequest;
 import com.ecom.dto.OrderDtos.OrderItemResponse;
 import com.ecom.dto.OrderDtos.OrderResponse;
@@ -9,6 +7,8 @@ import com.ecom.entity.Order;
 import com.ecom.entity.OrderItem;
 import com.ecom.entity.User;
 import com.ecom.exception.ApiException;
+import com.ecom.inventory.client.InventoryClient;
+import com.ecom.inventory.client.InventoryClient.ReservedProduct;
 import com.ecom.repository.OrderRepository;
 import com.ecom.repository.UserRepository;
 import org.springframework.http.HttpStatus;
