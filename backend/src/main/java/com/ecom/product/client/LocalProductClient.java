@@ -1,8 +1,8 @@
-package com.ecom.client;
+package com.ecom.product.client;
 
-import com.ecom.entity.Product;
-import com.ecom.repository.ProductRepository;
 import com.ecom.exception.ApiException;
+import com.ecom.product.entity.Product;
+import com.ecom.product.repository.ProductRepository;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;

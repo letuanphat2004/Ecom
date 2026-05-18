@@ -1,8 +1,8 @@
-package com.ecom.controller;
+package com.ecom.product.controller;
 
-import com.ecom.dto.ProductDtos.ProductRequest;
-import com.ecom.dto.ProductDtos.ProductResponse;
-import com.ecom.service.ProductService;
+import com.ecom.product.dto.ProductDtos.ProductRequest;
+import com.ecom.product.dto.ProductDtos.ProductResponse;
+import com.ecom.product.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;

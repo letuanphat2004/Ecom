@@ -1,6 +1,6 @@
 package com.ecom.client;
 
-import com.ecom.client.ProductClient.ProductView;
+import com.ecom.product.client.ProductClient.ProductView;
 import com.ecom.service.InventoryService;
 import java.security.Principal;
 import org.springframework.stereotype.Component;

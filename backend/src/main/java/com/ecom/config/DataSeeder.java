@@ -1,10 +1,10 @@
 package com.ecom.config;
 
-import com.ecom.entity.Product;
 import com.ecom.entity.Role;
 import com.ecom.entity.StockItem;
 import com.ecom.entity.User;
-import com.ecom.repository.ProductRepository;
+import com.ecom.product.entity.Product;
+import com.ecom.product.repository.ProductRepository;
 import com.ecom.repository.StockItemRepository;
 import com.ecom.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;

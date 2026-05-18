@@ -20,6 +20,13 @@ Build     Maven, npm
 Ecom/
   backend/
     src/main/java/com/ecom/
+      product/
+        client/
+        controller/
+        dto/
+        entity/
+        repository/
+        service/
       client/
       config/
       controller/
@@ -345,6 +352,18 @@ Create product flow phối hợp qua client contract thay vì trộn stock vào 
 Sau này LocalInventoryClient có thể được thay bằng HTTP client khi Inventory tách thành service riêng.
 ```
 
+### 7. Tái cấu trúc code theo domain package
+
+Code backend đang được chuyển dần từ cách chia theo layer kỹ thuật sang cách chia theo domain nghiệp vụ. Mỗi domain sẽ gom các phần liên quan như controller, service, dto, entity, repository và client contract vào cùng một package domain.
+
+Ý nghĩa:
+
+```text
+Boundary của từng domain rõ hơn.
+Dễ kiểm soát domain nào được phụ thuộc domain nào.
+Dễ tách từng domain thành service vật lý sau này.
+```
+
 ## Order Flow Hiện Tại
 
 Dự án hiện tại coi việc đặt hàng là hoàn tất ngay, chưa có payment flow riêng.
@@ -362,15 +381,14 @@ Order response is returned
 Vì chưa có trạng thái pending payment, hiện tại chưa có release-stock flow. Nếu sau này thêm payment, hệ thống cần compensation flow:
 
 ```text
-reserveStock
-payment success -> confirm order
-payment failure/cancel/timeout -> releaseStock
+Hiện tại dự án giả định đơn hàng COD được hoàn tất ngay khi khách bấm đặt hàng.
+Hệ thống không triển khai payment flow, cancel-order flow hoặc release-stock flow trong phạm vi hiện tại.
 ```
 
 ## Các Bước Refactor Tiếp Theo
 
 
 ```text
-1. Thêm releaseStock khi có payment hoặc cancel-order flow.
+1. Tiếp tục tái cấu trúc các domain còn lại theo domain package.
 2. Chỉ tách thành service vật lý sau khi boundary đã ổn định.
 ```

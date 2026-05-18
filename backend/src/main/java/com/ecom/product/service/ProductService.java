@@ -1,11 +1,11 @@
-package com.ecom.service;
+package com.ecom.product.service;
 
 import com.ecom.client.InventoryClient;
-import com.ecom.dto.ProductDtos.ProductRequest;
-import com.ecom.dto.ProductDtos.ProductResponse;
-import com.ecom.entity.Product;
 import com.ecom.exception.ApiException;
-import com.ecom.repository.ProductRepository;
+import com.ecom.product.dto.ProductDtos.ProductRequest;
+import com.ecom.product.dto.ProductDtos.ProductResponse;
+import com.ecom.product.entity.Product;
+import com.ecom.product.repository.ProductRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
