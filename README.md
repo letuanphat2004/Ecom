@@ -4,6 +4,8 @@ Ecom là ứng dụng ecommerce full-stack gồm backend Spring Boot và fronten
 
 README này là tài liệu chính của dự án. Khi hoàn thành một thay đổi đáng kể về architecture, API, database hoặc refactor, cần cập nhật lại README.
 
+Contract nội bộ giữa Product, Inventory và Order được mô tả trong [SERVICE_CONTRACTS.md](SERVICE_CONTRACTS.md).
+
 ## Tech Stack
 
 ```text
@@ -131,7 +133,7 @@ Create product request:
 }
 ```
 
-`initialStockQuantity` chi duoc dung khi tao product moi. Khi update product, ton kho van duoc quan ly qua Inventory API.
+`initialStockQuantity` chỉ được dùng khi tạo product mới. Khi update product, tồn kho vẫn được quản lý qua Inventory API.
 
 ### Inventory
 
@@ -314,11 +316,11 @@ ProductView
 - active
 ```
 
-### 6. Tao workflow create product + initialize stock
+### 6. Tạo workflow create product + initialize stock
 
-`ProductService` khong tu ghi truc tiep vao bang ton kho. Khi admin tao product moi, Product domain tao catalog record truoc, sau do goi `InventoryClient.initializeStock(...)` de Inventory domain tao `StockItem`.
+`ProductService` không tự ghi trực tiếp vào bảng tồn kho. Khi admin tạo product mới, Product domain tạo catalog record trước, sau đó gọi `InventoryClient.initializeStock(...)` để Inventory domain tạo `StockItem`.
 
-Flow hien tai:
+Flow hiện tại:
 
 ```text
 ProductController
@@ -328,19 +330,19 @@ ProductController
   -> InventoryService.initializeStock()
 ```
 
-Request tao product co them:
+Request tạo product có thêm:
 
 ```text
 initialStockQuantity
 ```
 
-Y nghia:
+Ý nghĩa:
 
 ```text
 Product owns catalog data.
 Inventory owns stock quantity.
-Create product flow phoi hop qua client contract thay vi tron stock vao Product entity.
-Sau nay LocalInventoryClient co the duoc thay bang HTTP client khi Inventory tach thanh service rieng.
+Create product flow phối hợp qua client contract thay vì trộn stock vào Product entity.
+Sau này LocalInventoryClient có thể được thay bằng HTTP client khi Inventory tách thành service riêng.
 ```
 
 ## Order Flow Hiện Tại
@@ -369,7 +371,6 @@ payment failure/cancel/timeout -> releaseStock
 
 
 ```text
-1. Định nghĩa internal API contract cho Product, Inventory và Order.
-2. Thêm releaseStock khi có payment hoặc cancel-order flow.
-3. Chỉ tách thành service vật lý sau khi boundary đã ổn định.
+1. Thêm releaseStock khi có payment hoặc cancel-order flow.
+2. Chỉ tách thành service vật lý sau khi boundary đã ổn định.
 ```
