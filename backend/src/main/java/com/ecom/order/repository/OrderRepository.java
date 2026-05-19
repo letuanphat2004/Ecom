@@ -1,6 +1,6 @@
-package com.ecom.repository;
+package com.ecom.order.repository;
 
-import com.ecom.entity.Order;
+import com.ecom.order.entity.Order;
 import java.util.List;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

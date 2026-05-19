@@ -1,8 +1,8 @@
-package com.ecom.controller;
+package com.ecom.order.controller;
 
-import com.ecom.dto.OrderDtos.CreateOrderRequest;
-import com.ecom.dto.OrderDtos.OrderResponse;
-import com.ecom.service.OrderService;
+import com.ecom.order.dto.OrderDtos.CreateOrderRequest;
+import com.ecom.order.dto.OrderDtos.OrderResponse;
+import com.ecom.order.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;

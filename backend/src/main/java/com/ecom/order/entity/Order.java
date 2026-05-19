@@ -1,4 +1,4 @@
-package com.ecom.entity;
+package com.ecom.order.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

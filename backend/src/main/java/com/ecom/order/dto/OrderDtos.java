@@ -1,6 +1,6 @@
-package com.ecom.dto;
+package com.ecom.order.dto;
 
-import com.ecom.entity.OrderStatus;
+import com.ecom.order.entity.OrderStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
