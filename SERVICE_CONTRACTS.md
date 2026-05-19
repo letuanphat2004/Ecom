@@ -8,7 +8,7 @@ Tài liệu này mô tả contract nội bộ giữa các domain trong Ecom mono
 - Service không query trực tiếp bảng do domain khác sở hữu.
 - Giao tiếp giữa domain đi qua client contract hoặc public API.
 - DTO/record trong contract chỉ chứa dữ liệu cần thiết, không expose JPA entity nội bộ.
-- Adapter local như `LocalProductClient` và `LocalInventoryClient` được phép bridge vào service/repository hiện tại vì dự án vẫn là monolith.
+- Adapter local như `LocalProductClient`, `LocalInventoryClient`, `LocalUserClient` và `LocalUserAccountClient` được phép bridge vào service/repository hiện tại vì dự án vẫn là monolith.
 
 ## Product Contract
 
@@ -197,6 +197,138 @@ Body dự kiến:
 }
 ```
 
+## User Contract
+
+User sở hữu thông tin người dùng và role:
+
+```text
+users
+user_roles
+```
+
+Order không giữ JPA relationship trực tiếp tới `User` và không gọi trực tiếp `UserRepository`.
+Khi cần thông tin người mua, Order chỉ phụ thuộc vào `UserClient`.
+
+Auth không gọi trực tiếp `UserRepository`, không thao tác trực tiếp `User` entity và không tự gán `Role`.
+Khi cần kiểm tra/tạo/tìm account, Auth chỉ phụ thuộc vào `UserAccountClient`.
+
+### `UserClient.getCurrentUser(principal)`
+
+Bên gọi hiện tại:
+
+```text
+OrderService
+```
+
+Input:
+
+```text
+principal: Principal
+```
+
+Output:
+
+```text
+UserView
+- userId
+- email
+- fullName
+```
+
+Behavior:
+
+```text
+Lấy user hiện tại từ principal.
+Trả snapshot tối thiểu để Order lưu thông tin người mua.
+Không expose User entity ra ngoài User domain.
+```
+
+Lỗi:
+
+```text
+401 Authenticated user not found
+```
+
+HTTP mapping dự kiến khi tách service:
+
+```text
+GET /internal/users/me
+```
+
+### `UserAccountClient.existsByEmail(email)`
+
+Bên gọi hiện tại:
+
+```text
+AuthService
+```
+
+Input:
+
+```text
+email: String
+```
+
+Output:
+
+```text
+boolean
+```
+
+### `UserAccountClient.createCustomer(fullName, email, encodedPassword)`
+
+Bên gọi hiện tại:
+
+```text
+AuthService
+```
+
+Input:
+
+```text
+fullName: String
+email: String
+encodedPassword: String
+```
+
+Output:
+
+```text
+UserAccountView
+- userId
+- fullName
+- email
+- roles
+```
+
+Behavior:
+
+```text
+Tạo user customer mới.
+User domain gán role mặc định ROLE_CUSTOMER.
+Auth chỉ encode password trước khi gọi contract, không tự thao tác User entity.
+```
+
+### `UserAccountClient.findByEmail(email)`
+
+Bên gọi hiện tại:
+
+```text
+AuthService
+```
+
+Input:
+
+```text
+email: String
+```
+
+Output:
+
+```text
+Optional<UserAccountView>
+```
+
 ## Order Contract
 
 Order sở hữu đơn hàng và order item snapshot:
@@ -213,6 +345,8 @@ userId
 customerEmail
 customerName
 ```
+
+Các field này là snapshot/tham chiếu dữ liệu người mua tại thời điểm đặt hàng, không phải JPA relationship tới `User`.
 
 API hiện tại cho frontend:
 
@@ -252,6 +386,7 @@ Behavior:
 ```text
 OrderService gọi UserClient.getCurrentUser để lấy snapshot người mua.
 OrderService gọi InventoryClient.reserveStock cho từng item.
+Order lưu userId, customerEmail, customerName từ UserView, không lưu User entity.
 OrderItem lưu product snapshot, không lưu JPA relation tới Product.
 ```
 
@@ -289,6 +424,7 @@ POST /internal/inventory/releases
 
 - `OrderService` đang phụ thuộc `InventoryClient`, không import `Product` hoặc `ProductRepository`.
 - `OrderService` đang phụ thuộc `UserClient`, không import `User` hoặc `UserRepository`.
+- `AuthService` đang phụ thuộc `UserAccountClient`, không import `User`, `Role` hoặc `UserRepository`.
 - `InventoryService` đang phụ thuộc `ProductClient`, không import `Product` hoặc `ProductRepository`.
 - `ProductService` đang phụ thuộc `InventoryClient`, không import `StockItem` hoặc `StockItemRepository`.
-- `LocalProductClient`, `LocalInventoryClient`, `LocalUserClient` và `DataSeeder` vẫn bridge vào implementation nội bộ vì dự án còn là monolith.
+- `LocalProductClient`, `LocalInventoryClient`, `LocalUserClient`, `LocalUserAccountClient` và `DataSeeder` vẫn bridge vào implementation nội bộ vì dự án còn là monolith.
