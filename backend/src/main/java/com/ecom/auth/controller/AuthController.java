@@ -1,9 +1,9 @@
-package com.ecom.user.controller;
+package com.ecom.auth.controller;
 
-import com.ecom.user.dto.AuthDtos.AuthResponse;
-import com.ecom.user.dto.AuthDtos.LoginRequest;
-import com.ecom.user.dto.AuthDtos.RegisterRequest;
-import com.ecom.user.service.AuthService;
+import com.ecom.auth.dto.AuthDtos.AuthResponse;
+import com.ecom.auth.dto.AuthDtos.LoginRequest;
+import com.ecom.auth.dto.AuthDtos.RegisterRequest;
+import com.ecom.auth.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;

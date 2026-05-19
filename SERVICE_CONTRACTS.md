@@ -197,6 +197,35 @@ Body dự kiến:
 }
 ```
 
+## Auth Contract
+
+Auth sở hữu login/register/token flow, nhưng hiện chưa sở hữu bảng riêng. Auth dùng dữ liệu account do User domain cung cấp qua `UserAccountClient`.
+
+API hiện tại cho frontend:
+
+```text
+POST /api/auth/register
+POST /api/auth/login
+```
+
+Dependency hiện tại:
+
+```text
+AuthService
+  -> UserAccountClient
+  -> LocalUserAccountClient
+  -> UserRepository
+```
+
+Boundary:
+
+```text
+AuthService không import User, Role hoặc UserRepository.
+AuthService không tự tạo User entity.
+AuthService chỉ encode password, gọi authentication flow và cấp JWT token.
+User domain chịu trách nhiệm tạo customer account và gán ROLE_CUSTOMER.
+```
+
 ## User Contract
 
 User sở hữu thông tin người dùng và role:

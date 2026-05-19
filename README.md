@@ -40,10 +40,12 @@ Ecom/
         entity/
         repository/
         service/
-      user/
-        client/
+      auth/
         controller/
         dto/
+        service/
+      user/
+        client/
         entity/
         repository/
         service/
@@ -178,7 +180,8 @@ GET  /api/orders/me
 Backend hiện có các nhóm nghiệp vụ chính:
 
 ```text
-Auth/User
+Auth
+User
 Product/Catalog
 Inventory
 Order
@@ -191,7 +194,12 @@ Hiện tại toàn bộ backend vẫn là một Spring Boot application và mộ
 Định hướng ownership cho các service sau này:
 
 ```text
-Auth/User owns:
+Auth owns:
+- login/register flow
+- JWT/token generation
+- authentication orchestration
+
+User owns:
 - users
 - user_roles
 
@@ -405,6 +413,47 @@ OrderService
 Order lưu snapshot/tham chiếu người mua tại thời điểm đặt hàng.
 Order không phụ thuộc trực tiếp vào User entity mapping.
 Sau này LocalUserClient có thể được thay bằng HTTP client khi Auth/User tách thành service riêng.
+```
+
+### 9. Tách Auth thành package riêng
+
+Auth hiện có package riêng:
+
+```text
+auth/
+  controller/
+  dto/
+  service/
+```
+
+User tiếp tục sở hữu user/account data:
+
+```text
+user/
+  client/
+  entity/
+  repository/
+  service/
+```
+
+`AuthService` không còn gọi trực tiếp `UserRepository`, không thao tác trực tiếp `User` entity và không tự gán `Role`.
+Khi cần kiểm tra/tạo/tìm account, Auth đi qua `UserAccountClient`.
+
+Flow hiện tại:
+
+```text
+AuthService
+  -> UserAccountClient
+  -> LocalUserAccountClient
+  -> UserRepository
+```
+
+Ý nghĩa:
+
+```text
+Auth sở hữu login/register/token flow.
+User sở hữu users, user_roles và account data.
+Sau này Auth và User có thể tách service vật lý dễ hơn vì dependency đã đi qua contract.
 ```
 
 ## Order Flow Hiện Tại
