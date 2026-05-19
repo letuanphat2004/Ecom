@@ -1,4 +1,4 @@
-package com.ecom.client;
+package com.ecom.user.client;
 
 import java.security.Principal;
 

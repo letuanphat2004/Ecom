@@ -1,7 +1,5 @@
 package com.ecom.order.service;
 
-import com.ecom.client.UserClient;
-import com.ecom.client.UserClient.UserView;
 import com.ecom.inventory.client.InventoryClient;
 import com.ecom.inventory.client.InventoryClient.ReservedProduct;
 import com.ecom.order.dto.OrderDtos.CreateOrderRequest;
@@ -10,6 +8,8 @@ import com.ecom.order.dto.OrderDtos.OrderResponse;
 import com.ecom.order.entity.Order;
 import com.ecom.order.entity.OrderItem;
 import com.ecom.order.repository.OrderRepository;
+import com.ecom.user.client.UserClient;
+import com.ecom.user.client.UserClient.UserView;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,7 +1,7 @@
-package com.ecom.client;
+package com.ecom.user.client;
 
 import com.ecom.exception.ApiException;
-import com.ecom.repository.UserRepository;
+import com.ecom.user.repository.UserRepository;
 import java.security.Principal;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;

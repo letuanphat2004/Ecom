@@ -1,4 +1,4 @@
-package com.ecom.entity;
+package com.ecom.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;

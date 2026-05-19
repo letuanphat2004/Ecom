@@ -1,6 +1,6 @@
-package com.ecom.service;
+package com.ecom.user.service;
 
-import com.ecom.repository.UserRepository;
+import com.ecom.user.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

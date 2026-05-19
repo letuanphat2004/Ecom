@@ -1,6 +1,6 @@
-package com.ecom.repository;
+package com.ecom.user.repository;
 
-import com.ecom.entity.User;
+import com.ecom.user.entity.User;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,4 +1,4 @@
-package com.ecom.entity;
+package com.ecom.user.entity;
 
 public enum Role {
     ROLE_CUSTOMER,

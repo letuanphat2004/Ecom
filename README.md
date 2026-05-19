@@ -40,15 +40,16 @@ Ecom/
         entity/
         repository/
         service/
-      client/
+      user/
+        client/
+        controller/
+        dto/
+        entity/
+        repository/
+        service/
       config/
-      controller/
-      dto/
-      entity/
       exception/
-      repository/
       security/
-      service/
     src/main/resources/
       application.yml
 
@@ -424,6 +425,6 @@ Order response is returned
 
 
 ```text
-1. Tiếp tục tái cấu trúc các domain còn lại theo domain package.
-2. Chỉ tách thành service vật lý sau khi boundary đã ổn định.
+2. Bổ sung test cho các flow chính: auth, create product, inventory adjustment và create order.
+3. Chỉ tách thành service vật lý sau khi boundary đã ổn định.
 ```

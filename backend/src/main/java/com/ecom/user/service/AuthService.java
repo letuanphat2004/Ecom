@@ -1,14 +1,14 @@
-package com.ecom.service;
+package com.ecom.user.service;
 
-import com.ecom.dto.AuthDtos.AuthResponse;
-import com.ecom.dto.AuthDtos.LoginRequest;
-import com.ecom.dto.AuthDtos.RegisterRequest;
-import com.ecom.dto.AuthDtos.UserResponse;
-import com.ecom.entity.Role;
-import com.ecom.entity.User;
 import com.ecom.exception.ApiException;
-import com.ecom.repository.UserRepository;
 import com.ecom.security.JwtService;
+import com.ecom.user.dto.AuthDtos.AuthResponse;
+import com.ecom.user.dto.AuthDtos.LoginRequest;
+import com.ecom.user.dto.AuthDtos.RegisterRequest;
+import com.ecom.user.dto.AuthDtos.UserResponse;
+import com.ecom.user.entity.Role;
+import com.ecom.user.entity.User;
+import com.ecom.user.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
